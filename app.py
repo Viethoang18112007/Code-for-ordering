@@ -35,7 +35,11 @@ from flask import (
 )
 
 APP_DIR = Path(__file__).resolve().parent
-INSTANCE = APP_DIR / "instance"
+# Vercel runtime mounts project files as read-only (/var/task), so use /tmp for writable data.
+if os.environ.get("VERCEL"):
+    INSTANCE = Path("/tmp/instance")
+else:
+    INSTANCE = APP_DIR / "instance"
 DB_PATH = INSTANCE / "group_order.db"
 
 ADMIN_PASSWORD = os.environ.get("GROUP_ORDER_ADMIN_PASSWORD", "demo123")
