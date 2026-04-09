@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Gom đơn{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f0e8;
+      --paper: #fffdf8;
+      --ink: #1c1a16;
+      --muted: #5c574c;
+      --line: #e0d8c8;
+      --coral: #e85d4c;
+      --teal: #0d9488;
+      --teal-soft: #ccfbf1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Sora", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    h1, h2, h3 { font-family: "Syne", sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 18px; padding: 1.35rem 1.4rem;
+      box-shadow: 0 12px 40px rgba(28,26,22,0.06);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 100%; padding: 0.75rem 1rem; border-radius: 12px;
+      border: none; font-family: inherit; font-weight: 600; font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--coral); color: #fff; }
+    .btn-secondary { background: var(--teal); color: #fff; }
+    .btn-outline { background: transparent; border: 2px solid var(--line); color: var(--ink); }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; font-weight: 500; }
+    input {
+      width: 100%; padding: 0.7rem 0.85rem; border-radius: 12px;
+      border: 1px solid var(--line); background: #fff; font-family: inherit; font-size: 1rem;
+    }
+    .field { margin-bottom: 0.9rem; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    .flash { padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1rem; font-size: 0.92rem; }
+    .flash-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .flash-ok { background: var(--teal-soft); color: #0f766e; border: 1px solid #99f6e4; }
+    .pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .pill-open { background: #dcfce7; color: #166534; }
+    .pill-locked { background: #fef9c3; color: #854d0e; }
+    .pill-placed { background: #e0e7ff; color: #3730a3; }
+    .pill-cancel { background: #fee2e2; color: #991b1b; }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    ul.items { list-style: none; padding: 0; margin: 0; }
+    ul.items li {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+    .small { font-size: 0.82rem; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ 'error' if cat == 'error' else 'ok' }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block body %}{% endblock %}
+  </div>
+</body>
+</html>

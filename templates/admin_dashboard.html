@@ -1,0 +1,45 @@
+{% extends "base_admin.html" %}
+{% block title %}Phiên gom đơn{% endblock %}
+{% block body %}
+<div class="top">
+  <span class="brand">Gom đơn · Admin</span>
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <a class="btn btn-primary" href="{{ url_for('creator') }}">+ Tạo phiên mới</a>
+    <form method="post" action="{{ url_for('admin_logout') }}" style="margin:0;">
+      <button type="submit" class="btn btn-ghost">Đăng xuất</button>
+    </form>
+  </div>
+</div>
+
+<h1 style="margin-top:0;">Các phiên</h1>
+<p style="color:var(--muted);">Copy cột <strong>Link tham gia</strong> gửi cho người dùng.</p>
+
+{% if not sessions %}
+  <div class="card"><p style="margin:0; color:var(--muted);">Chưa có phiên nào. Tạo phiên mới để lấy link.</p></div>
+{% else %}
+  <div class="card" style="padding:0; overflow:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Tiêu đề</th>
+          <th>Hãng</th>
+          <th>Trạng thái</th>
+          <th>Link tham gia</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>{{ s.title }}</td>
+          <td>{{ s.brand }}</td>
+          <td><code>{{ s.status }}</code></td>
+          <td style="max-width:220px; word-break:break-all;"><a href="{{ s.join_url }}">{{ s.join_url }}</a></td>
+          <td><a class="btn btn-ghost" style="padding:0.35rem 0.65rem; font-size:0.85rem;" href="{{ url_for('admin_session_detail', session_id=s.id) }}">Chi tiết</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}

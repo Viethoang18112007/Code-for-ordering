@@ -1,0 +1,22 @@
+{# mode: "creator" | "joiner" #}
+{% if mode == "creator" %}
+  <h2 style="font-size:1.05rem; margin:0 0 0.75rem; font-family:Syne,sans-serif;">Thông tin của bạn (người tạo nhóm)</h2>
+  <div class="field">
+    <label for="creator_name">Họ tên hoặc tên hiển thị <span style="color:var(--coral);">*</span></label>
+    <input type="text" id="creator_name" name="creator_name" required maxlength="120" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="name" value="{{ request.form.get('creator_name', '') }}">
+  </div>
+  <div class="field">
+    <label for="creator_phone">Số điện thoại (tuỳ chọn)</label>
+    <input type="tel" id="creator_phone" name="creator_phone" maxlength="40" placeholder="Để mọi người liên hệ khi cần" autocomplete="tel" value="{{ request.form.get('creator_phone', '') }}">
+  </div>
+{% elif mode == "joiner" %}
+  <h2 style="font-size:1.05rem; margin:0 0 0.75rem; font-family:Syne,sans-serif;">Thông tin của bạn (người tham gia)</h2>
+  <div class="field">
+    <label for="display_name">Tên hiển thị trong nhóm <span style="color:var(--coral);">*</span></label>
+    <input type="text" id="display_name" name="display_name" required maxlength="80" placeholder="Ví dụ: Minh — phòng 1203" value="{{ request.form.get('display_name', '') }}">
+  </div>
+  <div class="field">
+    <label for="phone">Số điện thoại (tuỳ chọn)</label>
+    <input type="tel" id="phone" name="phone" maxlength="40" placeholder="Để người gom đơn đối chiếu" autocomplete="tel" value="{{ request.form.get('phone', '') }}">
+  </div>
+{% endif %}

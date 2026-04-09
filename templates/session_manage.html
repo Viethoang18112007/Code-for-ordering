@@ -1,0 +1,109 @@
+{% extends "base_admin.html" %}
+{% block title %}{{ sess.title }}{% endblock %}
+{% block head %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!document.getElementById("auto-refresh")) return;
+  setInterval(function () {
+    var el = document.getElementById("auto-refresh");
+    if (el && el.checked) location.reload();
+  }, 12000);
+});
+</script>
+{% endblock %}
+{% block body %}
+<p style="font-size:0.88rem; color:var(--muted); margin:0 0 1rem;">
+  <label style="cursor:pointer; user-select:none;">
+    <input type="checkbox" id="auto-refresh" checked />
+    Tự làm mới trang mỗi 12 giây để thấy người mới / đã chuyển tiền / đồng ý (bỏ chọn nếu đang ghi bằng chứng lâu).
+  </label>
+</p>
+<div class="top">
+  <span class="brand"><a href="{{ back_url }}" style="color:inherit;">{{ back_label }}</a></span>
+  <span style="color:var(--muted); font-size:0.9rem;">{{ sess.status }}</span>
+</div>
+
+<h1 style="margin-top:0;">{{ sess.title or "Phiên gom đơn" }}</h1>
+{% if sess.creator_name or sess.creator_phone %}
+<p style="margin:0 0 1rem; font-size:0.9rem; color:var(--muted);">Người tạo nhóm: <strong>{{ sess.creator_name or "—" }}</strong>{% if sess.creator_phone %} · {{ sess.creator_phone }}{% endif %}</p>
+{% endif %}
+
+<div class="card" style="margin-bottom:1.25rem;">
+  <p style="margin:0 0 0.5rem;"><strong>Link tham gia (joiner) — gửi mọi người:</strong></p>
+  <p style="margin:0; word-break:break-all;"><a href="{{ join_url }}">{{ join_url }}</a></p>
+  <form method="post" style="margin-top:1rem;">
+    <input type="hidden" name="action" value="set_link_base">
+    <div class="field" style="margin-bottom:0.65rem;">
+      <label for="link_base_url">Địa chỉ để hiển thị trong link (khi chia sẻ ra máy khác / mạng khác)</label>
+      <input type="url" id="link_base_url" name="link_base_url" placeholder="Ví dụ: http://192.168.1.10:5000 hoặc URL ngrok" value="{{ sess.link_base_url or '' }}">
+    </div>
+    <p style="margin:0 0 0.75rem; font-size:0.85rem; color:var(--muted);">Để trống = dùng địa chỉ bạn đang mở trang. Có thể đặt biến môi trường <code>PUBLIC_BASE_URL</code> cho cả app.</p>
+    <button type="submit" class="btn btn-ghost">Lưu địa chỉ link</button>
+  </form>
+  <p style="margin:0.75rem 0 0; color:var(--muted); font-size:0.9rem;">Hãng: {{ sess.brand }} · Địa chỉ: {{ sess.address or "—" }}</p>
+  {% if sess.scheduled_at %}<p class="muted" style="margin:0.35rem 0 0;">Giờ: {{ sess.scheduled_at }}</p>{% endif %}
+  {% if sess.deadline_at %}<p class="muted" style="margin:0;">Hạn chót: {{ sess.deadline_at }}</p>{% endif %}
+</div>
+
+{% if all_agreed %}
+  <div class="flash flash-ok" style="margin-bottom:1rem;">Mọi người có món đã <strong>chuyển tiền</strong> và <strong>bấm đồng ý</strong>. Bạn có thể đặt tay trên app giao đồ.</div>
+{% endif %}
+
+<div class="card" style="margin-bottom:1.25rem;">
+  <h2 style="margin-top:0; font-size:1.15rem;">Tổng nhóm (ước tính)</h2>
+  <p style="font-size:1.75rem; font-family:Fraunces,serif; margin:0;">{{ "%.2f"|format(group_total) }} <span style="font-size:1rem; color:var(--muted);">HKD</span></p>
+</div>
+
+<h2 style="font-size:1.15rem;">Người tham gia</h2>
+{% if not participants %}
+  <div class="card"><p style="margin:0; color:var(--muted);">Chưa ai tham gia.</p></div>
+{% else %}
+  {% for p in participants %}
+  <div class="card" style="margin-bottom:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+      <div>
+        <strong>{{ p.display_name }}</strong>
+        {% if p.phone %}<span style="font-size:0.85rem; color:var(--muted);"> · {{ p.phone }}</span>{% endif %}
+        <div style="font-size:0.88rem; color:var(--muted); margin-top:0.25rem;">
+          {% if p.paid_at %}<span style="color:var(--accent);">Đã chuyển tiền</span>{% else %}<span style="color:var(--warn);">Chưa chuyển tiền</span>{% endif %}
+          ·
+          {% if p.agreed_at %}<span style="color:var(--accent);">Đã đồng ý</span>{% else %}<span style="color:var(--muted);">Chưa đồng ý</span>{% endif %}
+        </div>
+      </div>
+      <div style="font-family:Fraunces,serif; font-size:1.2rem;">{{ "%.2f"|format(p.subtotal) }} HKD</div>
+    </div>
+    {% if p.line_items %}
+    <ul style="margin:0.75rem 0 0; padding-left:1.1rem; color:var(--muted); font-size:0.9rem;">
+      {% for it in p.line_items %}
+      <li>{{ it.name }} × {{ it.qty }} @ {{ "%.2f"|format(it.unit_price) }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% endif %}
+
+<h2 style="font-size:1.15rem;">{{ manage_heading }}</h2>
+<div class="card">
+  <form method="post" style="margin-bottom:1rem;">
+    <input type="hidden" name="action" value="lock">
+    <button type="submit" class="btn btn-primary" {% if sess.status != 'open' %}disabled{% endif %}>Khóa phiên (không sửa món)</button>
+  </form>
+  <form method="post" style="margin-bottom:1rem;">
+    <input type="hidden" name="action" value="unlock">
+    <button type="submit" class="btn btn-ghost" {% if sess.status != 'locked' %}disabled{% endif %}>Mở khóa</button>
+  </form>
+  <form method="post" style="margin-bottom:1rem;">
+    <input type="hidden" name="action" value="placed">
+    <div class="field">
+      <label for="proof_note">Ghi chú / bằng chứng đặt đơn (mã đơn, ảnh URL…)</label>
+      <textarea id="proof_note" name="proof_note" placeholder="Dán thông tin sau khi đặt trên Foodpanda/Keeta">{{ sess.proof_note or '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" {% if sess.status == 'placed' or sess.status == 'cancelled' %}disabled{% endif %}>Đánh dấu đã đặt đơn</button>
+  </form>
+  <form method="post" onsubmit="return confirm('Hủy phiên này?');">
+    <input type="hidden" name="action" value="cancel">
+    <button type="submit" class="btn btn-danger" {% if sess.status == 'cancelled' %}disabled{% endif %}>Hủy phiên</button>
+  </form>
+</div>
+{% endblock %}

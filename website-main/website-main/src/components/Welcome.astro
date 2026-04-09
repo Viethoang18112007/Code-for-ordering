@@ -1,0 +1,72 @@
+---
+import WelcomeButtons from "./welcome-buttons.tsx";
+import logo from "../assets/TR-LOGO.svg";
+import { Image } from "astro:assets";
+---
+
+<div
+  class="relative mx-auto flex flex-col justify-center pt-32 pb-8 px-4 md:px-16"
+>
+  <div
+    class="relative z-10 max-w-5xl mx-auto w-full flex flex-wrap justify-between gap-x-8"
+  >
+    <div>
+      <h1
+        class="text-6xl mb-2 md:text-7xl max-w-3xl text-purple-800 font-display font-bold leading-tighter tracking-normal fade-in"
+      >
+        Turn white <span class="whitespace-nowrap">papers into</span> working products
+      </h1>
+      <!-- <div class="w-full mb-18 md:w-1/2 md:mb-8 text-purple-800">
+      <Image
+        src={logo}
+        alt="Thinkin' Rocks"
+        class="w-full h-full object-contain"
+      />
+    </div> -->
+      <h2
+        class="text-lg hidden md:block w-full mb-4 md:text-xl font-mono tracking-tight md:leading-10 fade-in"
+      >
+        <span class="whitespace-nowrap">more hardware</span> • <span
+          class="whitespace-nowrap">faster build cycles</span
+        > • <span class="whitespace-nowrap">stronger aura</span>
+      </h2>
+      <div>
+        <p class="text-gray-700 max-w-prose text-base md:text-lg fade-in">
+    
+          Thinkin' Rocks is an applied engineering lab and prototyping
+          infrastructure provider. Designed for builders, hackers, and founders,
+          we give you the tools, space, and community to turn bold concepts into
+          working prototypes — and working prototypes into startups.
+        </p>
+      </div>
+      
+      <!-- Buttons Section -->
+      <div class="fade-in mt-10">
+        <div class="flex flex-wrap gap-4">
+          <div class="bg-purple-600 h-fit translate-0.5">
+            <a
+              href="https://tally.so/r/mBrVg7"
+              class="bg-purple-50 text-purple-600 inline-flex px-6 py-3 -translate-0.5 items-center gap-2 whitespace-nowrap font-mono hover:bg-purple-100 transition-colors"
+              data-umami-event="join-us-click"
+            >
+              Join Us
+            </a>
+          </div>
+
+          <div class="bg-teal-600 h-fit translate-0.5">
+            <a
+              href="/hack"
+              class="bg-teal-50 text-teal-600 inline-flex px-6 py-3 -translate-0.5 items-center gap-2 whitespace-nowrap font-mono hover:bg-teal-100 transition-colors"
+              data-umami-event="contact-us-click"
+            >
+              Hackathon!
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in pt-4 -mr-2">
+      <WelcomeButtons client:load />
+    </div>
+  </div>
+</div>

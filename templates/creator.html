@@ -1,0 +1,40 @@
+{% extends "base_user.html" %}
+{% block title %}Tạo nhóm gom đơn{% endblock %}
+{% block body %}
+<div class="card" style="max-width:560px;">
+  <h1 style="margin-top:0;">Tạo nhóm &amp; lấy link</h1>
+  <p class="muted" style="margin:0 0 1rem; font-size:0.92rem;">Điền thông tin cá nhân và chi tiết phiên. Hệ thống tạo <strong>mã 13 ký tự</strong> — link tham gia dạng <code>…/joiner/Mã</code>. Bạn nhận link quản lý tại <code>/creator/session/…</code> (giữ bí mật).</p>
+  <form method="post">
+    {% set mode = "creator" %}
+    {% include "includes/personal_fields.html" %}
+    <h2 style="font-size:1.05rem; margin:1.25rem 0 0.75rem; font-family:Syne,sans-serif;">Chi tiết phiên gom đơn</h2>
+    <div class="field">
+      <label for="title">Tiêu đề (hiển thị cho mọi người)</label>
+      <input type="text" id="title" name="title" placeholder="Ví dụ: Trưa thứ Hai — cùng tòa A" value="{{ request.form.get('title', '') }}">
+    </div>
+    <div class="field">
+      <label for="brand">Hãng / app đặt</label>
+      <input type="text" id="brand" name="brand" placeholder="Foodpanda / Keeta" value="{{ request.form.get('brand', 'Foodpanda / Keeta') }}">
+    </div>
+    <div class="field">
+      <label for="address">Địa chỉ giao cố định</label>
+      <textarea id="address" name="address" placeholder="Địa chỉ đầy đủ hoặc điểm hẹn" style="width:100%; min-height:88px; border-radius:12px; border:1px solid var(--line); padding:0.7rem;">{{ request.form.get('address', '') }}</textarea>
+    </div>
+    <div class="field">
+      <label for="scheduled_at">Giờ dự kiến đặt / nhận (tùy chọn)</label>
+      <input type="datetime-local" id="scheduled_at" name="scheduled_at" value="{{ request.form.get('scheduled_at', '') }}">
+    </div>
+    <div class="field">
+      <label for="deadline_at">Hạn chót tham gia (tùy chọn)</label>
+      <input type="datetime-local" id="deadline_at" name="deadline_at" value="{{ request.form.get('deadline_at', '') }}">
+    </div>
+    <div class="field">
+      <label for="link_base_url">Địa chỉ để chia sẻ link (tùy chọn)</label>
+      <input type="url" id="link_base_url" name="link_base_url" placeholder="https://example.com hoặc http://192.168.x.x:5000" value="{{ request.form.get('link_base_url', '') }}">
+      <p class="small muted" style="margin:0.35rem 0 0;">Thay <code>example.com</code> bằng domain thật của bạn. Hoặc đặt biến <code>PUBLIC_BASE_URL</code> trên server; IP LAN nếu chỉ dùng trong mạng nội bộ.</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Tạo nhóm &amp; lấy link</button>
+  </form>
+  <p style="margin:1rem 0 0;"><a href="{{ url_for('home') }}" class="small muted" style="color:var(--muted);">← Về danh sách nhóm</a></p>
+</div>
+{% endblock %}

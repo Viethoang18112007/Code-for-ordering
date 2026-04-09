@@ -1,0 +1,18 @@
+{% extends "base_admin.html" %}
+{% block title %}Đăng nhập{% endblock %}
+{% block body %}
+<div class="top">
+  <span class="brand">Gom đơn · Admin</span>
+</div>
+<div class="card" style="max-width: 400px;">
+  <h1 style="margin-top:0;">Đăng nhập</h1>
+  <p style="color:var(--muted); margin-top:0;">Mật khẩu mặc định: <code>demo123</code> (đổi bằng biến môi trường <code>GROUP_ORDER_ADMIN_PASSWORD</code>).</p>
+  <form method="post">
+    <div class="field">
+      <label for="password">Mật khẩu</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;">Vào bảng điều khiển</button>
+  </form>
+</div>
+{% endblock %}

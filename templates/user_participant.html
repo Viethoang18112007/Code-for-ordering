@@ -1,0 +1,133 @@
+{% extends "base_user.html" %}
+{% block title %}{{ participant.display_name }} · {{ sess.title }}{% endblock %}
+{% block body %}
+<div class="card">
+  {% if sess.status == 'open' %}
+    <span class="pill pill-open">Đang mở</span>
+  {% elif sess.status == 'locked' %}
+    <span class="pill pill-locked">Đã khóa</span>
+  {% elif sess.status == 'placed' %}
+    <span class="pill pill-placed">Đã đặt</span>
+  {% else %}
+    <span class="pill pill-cancel">Đã hủy</span>
+  {% endif %}
+  <h1 style="margin:0.75rem 0 0.25rem;">Xin chào, {{ participant.display_name }}</h1>
+  {% if participant.phone %}<p class="muted small" style="margin:0.25rem 0 0;">SĐT: {{ participant.phone }}</p>{% endif %}
+  <p class="muted" style="margin:0;">{{ sess.title }} · {{ sess.brand }}</p>
+  {% if sess.address %}
+  <p style="margin:0.65rem 0 0; font-size:0.92rem;"><strong>Điểm giao:</strong> {{ sess.address }}</p>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.05rem;">Giỏ của bạn</h2>
+  {% if sess.status == 'locked' %}
+    <p class="small muted" style="margin:0 0 0.75rem;">Phiên đã khóa — không thêm/xóa món.</p>
+  {% elif sess.status != 'open' %}
+    <p class="small muted" style="margin:0 0 0.75rem;">Không chỉnh sửa được.</p>
+  {% else %}
+    <form method="post" style="margin-bottom:1rem;">
+      <input type="hidden" name="action" value="add_item">
+      <div class="field">
+        <label for="item_name">Món</label>
+        <input type="text" id="item_name" name="item_name" placeholder="Tên món như trên app" required>
+      </div>
+      <div class="row2">
+        <div class="field" style="margin-bottom:0;">
+          <label for="qty">Số lượng</label>
+          <input type="number" id="qty" name="qty" min="1" value="1">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="unit_price">Đơn giá (HKD)</label>
+          <input type="text" id="unit_price" name="unit_price" inputmode="decimal" placeholder="48">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:0.75rem;">Thêm món</button>
+    </form>
+  {% endif %}
+
+  {% if my_items %}
+  <ul class="items">
+    {% for it in my_items %}
+    <li>
+      <span>{{ it.name }} × {{ it.qty }}</span>
+      <span style="white-space:nowrap;">{{ "%.2f"|format(it.qty * it.unit_price) }} HKD</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <p style="margin:0.75rem 0 0; font-weight:600;">Tạm tính của bạn: {{ "%.2f"|format(my_total) }} HKD</p>
+  {% if sess.status == 'open' %}
+  <div class="small muted" style="margin-top:0.75rem;">Xóa món:</div>
+  <ul style="list-style:none; padding:0; margin:0.35rem 0 0;">
+    {% for it in my_items %}
+    <li style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; padding:0.35rem 0; border-bottom:1px solid var(--line);">
+      <span class="small">{{ it.name }}</span>
+      <form method="post" style="margin:0;">
+        <input type="hidden" name="action" value="remove_item">
+        <input type="hidden" name="index" value="{{ loop.index0 }}">
+        <button type="submit" class="btn btn-outline small" style="width:auto; padding:0.35rem 0.65rem; font-size:0.8rem;">Xóa</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% else %}
+  <p class="muted" style="margin:0;">Chưa có món. Thêm món và giá (ước tính) để mọi người thấy tổng.</p>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.05rem;">Tổng cả nhóm (ước tính)</h2>
+  <p style="font-size:1.65rem; font-family:Syne,sans-serif; margin:0;">{{ "%.2f"|format(group_total) }} <span class="muted" style="font-size:1rem;">HKD</span></p>
+  <p class="small muted" style="margin:0.5rem 0 0;">Chưa trừ voucher freeship — admin sẽ đặt một đơn gộp.</p>
+</div>
+
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.05rem;">Mọi người</h2>
+  <ul class="items">
+    {% for r in roster %}
+    <li>
+      <span>
+        {{ r.display_name }}{% if r.is_me %} <strong>(bạn)</strong>{% endif %}
+        <div class="small muted" style="margin-top:0.15rem;">
+          {% if r.paid %}Đã chuyển tiền{% else %}Chưa chuyển{% endif %} ·
+          {% if r.agreed %}Đã đồng ý{% else %}Chưa đồng ý{% endif %}
+        </div>
+      </span>
+      <span style="white-space:nowrap;">{{ "%.2f"|format(r.subtotal) }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% if sess.status not in ('cancelled', 'placed') %}
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.05rem;">Thanh toán &amp; đồng ý (demo)</h2>
+  <p class="small muted" style="margin-top:0;">Sau khi chuyển tiền cho admin theo cách bạn thỏa thuận, bấm xác nhận. Không sửa món sau khi đã chuyển tiền (quy ước — app không khóa tự động).</p>
+  <form method="post" style="margin-top:0.75rem;">
+    <input type="hidden" name="action" value="mark_paid">
+    <button type="submit" class="btn btn-secondary" {% if participant.paid_at %}disabled{% endif %}>
+      {% if participant.paid_at %}Đã ghi nhận chuyển tiền{% else %}Tôi đã chuyển tiền{% endif %}
+    </button>
+  </form>
+  <form method="post" style="margin-top:0.65rem;">
+    <input type="hidden" name="action" value="agree">
+    <button type="submit" class="btn btn-primary" {% if participant.agreed_at %}disabled{% endif %}>
+      {% if participant.agreed_at %}Đã đồng ý{% else %}Đồng ý với tổng (sau khi đã chuyển tiền){% endif %}
+    </button>
+  </form>
+</div>
+{% endif %}
+
+{% if sess.status == 'placed' and sess.proof_note %}
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.05rem;">Bằng chứng / ghi chú đơn</h2>
+  <p style="margin:0; white-space:pre-wrap;">{{ sess.proof_note }}</p>
+</div>
+{% endif %}
+
+<div class="card" style="margin-top:1rem;">
+  <p class="small muted" style="margin:0 0 0.5rem;"><strong>Link riêng của bạn</strong> (lưu hoặc gửi lại cho chính mình)</p>
+  <p class="small" style="margin:0; word-break:break-all;">{{ share_url }}</p>
+</div>
+{% endblock %}

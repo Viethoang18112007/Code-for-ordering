@@ -1,0 +1,39 @@
+{% extends "base_user.html" %}
+{% block title %}{{ sess.title }}{% endblock %}
+{% block body %}
+<div class="card">
+  {% if sess.status == 'open' %}
+    <span class="pill pill-open">Đang mở</span>
+  {% elif sess.status == 'locked' %}
+    <span class="pill pill-locked">Đã khóa</span>
+  {% elif sess.status == 'placed' %}
+    <span class="pill pill-placed">Đã đặt</span>
+  {% else %}
+    <span class="pill pill-cancel">Đã hủy</span>
+  {% endif %}
+
+  <h1 style="margin:0.75rem 0 0.35rem;">{{ sess.title or "Gom đơn chung" }}</h1>
+  <p class="muted" style="margin:0;">{{ sess.brand }}</p>
+  {% if sess.address %}
+  <p style="margin:0.75rem 0 0; font-size:0.95rem;"><strong>Điểm giao:</strong> {{ sess.address }}</p>
+  {% endif %}
+  {% if sess.scheduled_at %}
+  <p class="muted" style="margin:0.35rem 0 0;">Giờ: {{ sess.scheduled_at }}</p>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top:1rem;">
+  <h2 style="margin-top:0; font-size:1.1rem;">Tham gia</h2>
+  {% if sess.status == 'placed' %}
+    <p class="muted">Phiên đã đặt đơn, không thêm người mới.</p>
+  {% elif sess.status == 'cancelled' %}
+    <p class="muted">Phiên đã hủy.</p>
+  {% else %}
+    <form method="post" action="{{ join_action }}">
+      {% set mode = "joiner" %}
+      {% include "includes/personal_fields.html" %}
+      <button type="submit" class="btn btn-primary">Vào phiên</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

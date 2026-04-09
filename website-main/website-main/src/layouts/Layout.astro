@@ -1,0 +1,71 @@
+---
+import "@fontsource-variable/instrument-sans";
+import "../styles/global.css";
+import "../styles/fonts.css";
+import Analytics from "@vercel/analytics/astro";
+import Navbar from "../components/Navbar.astro";
+import { ClientRouter } from "astro:transitions";
+
+export interface Props {
+  hideNavbar?: boolean;
+}
+
+const { hideNavbar = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, viewport-fit=cover" />
+    <meta name="theme-color" content="rgba(255, 255, 255, 0)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <script defer async src="https://umami.thinkinrocks.com/script.js" data-website-id="7aa0774d-19ef-4a1a-b4b9-e30d27ac469c"></script>
+    <title>Thinkin' Rocks</title>
+    <Analytics />
+    <ClientRouter />
+  </head>
+  <body>
+    
+    <!-- Add nav-ready class immediately if navbar is hidden -->
+    {hideNavbar && <script is:inline>document.body.classList.add('nav-ready');</script>}
+    
+    {!hideNavbar && <Navbar />}
+    <slot />
+    
+    <script>
+      function initPage() {
+        document.body.classList.add('loaded');
+
+        // Intersection observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Handle lazy loaded images
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+          const imageEl = img as HTMLImageElement;
+          if (imageEl.complete) {
+            imageEl.classList.add('loaded');
+          } else {
+            imageEl.addEventListener('load', () => imageEl.classList.add('loaded'));
+          }
+        });
+      }
+
+      // Run on initial load and after view transitions
+      document.addEventListener('astro:page-load', initPage);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Welcome from "../components/Welcome.astro";
+import PresetBackground from "../components/PresetBackground.tsx";
+import StatueAnimation from "../components/StatueAnimation.tsx";
+---
+
+<Layout>
+  <div class="fixed inset-0 -z-50">
+    <PresetBackground client:only="react" />
+  </div>
+  <StatueAnimation client:only="react" />
+  <Welcome />
+  <!-- Footer-like contact section at bottom -->
+
+  
+  </div>
+</Layout>

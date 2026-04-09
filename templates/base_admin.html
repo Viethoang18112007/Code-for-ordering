@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Admin{% endblock %} · Gom đơn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a222c;
+      --border: #2d3848;
+      --text: #e8edf4;
+      --muted: #8b9cb3;
+      --accent: #3ee8a8;
+      --accent-dim: #2bc78a;
+      --danger: #ff6b7a;
+      --warn: #ffc14d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Outfit", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 600; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+      padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+    }
+    .brand { font-family: "Fraunces", serif; font-size: 1.25rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.55rem 1rem; border-radius: 10px; border: none;
+      font-family: inherit; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: #0a0f12; }
+    .btn-primary:hover { background: var(--accent-dim); }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger); color: #1a0505; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem 1.35rem;
+    }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem; }
+    input, textarea, select {
+      width: 100%; padding: 0.65rem 0.75rem; border-radius: 10px;
+      border: 1px solid var(--border); background: #121820; color: var(--text);
+      font-family: inherit; font-size: 1rem;
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .field { margin-bottom: 1rem; }
+    .flash { padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.95rem; }
+    .flash-error { background: rgba(255,107,122,0.15); color: #ffb3bc; border: 1px solid rgba(255,107,122,0.35); }
+    .flash-ok { background: rgba(62,232,168,0.12); color: var(--accent); border: 1px solid rgba(62,232,168,0.35); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 500; }
+    code { font-size: 0.85em; background: #121820; padding: 0.15rem 0.4rem; border-radius: 6px; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ 'error' if cat == 'error' else 'ok' }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block body %}{% endblock %}
+  </div>
+</body>
+</html>

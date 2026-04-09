@@ -1,0 +1,9 @@
+instance/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+website-main/website-main/node_modules/
+website-main/website-main/dist/
+website-main/website-main/.astro/

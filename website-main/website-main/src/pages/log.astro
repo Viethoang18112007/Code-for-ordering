@@ -1,0 +1,54 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+function formatTimestamp(timestamp: string) {
+  const date = new Date(timestamp);
+  return `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}.${date.getFullYear()}`;
+}
+
+const rawEntries = await getCollection("log");
+
+const entries = rawEntries.sort(
+  (a, b) =>
+    new Date(b.data.timestamp).getTime() -
+    new Date(a.data.timestamp).getTime()
+);
+
+const renderedEntries = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await entry.render();
+    return { ...entry, Content };
+  })
+);
+---
+
+<Layout>
+  <div class="pt-8 md:pt-16 pb-16 px-4 md:px-16">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-6">
+        Log
+      </h1>
+
+      <div class="space-y-8">
+        {renderedEntries.map((entry) => (
+          <div class="fade-in">
+            <div class="mb-2">
+              <span class="text-xs font-mono text-gray-500">
+                {formatTimestamp(entry.data.timestamp)}
+              </span>
+            </div>
+            <h3 class="text-lg font-mono text-gray-900 mb-2">
+              {entry.data.title}
+            </h3>
+            <div class="font-sans text-gray-800 leading-relaxed prose max-w-none">
+              <entry.Content />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>

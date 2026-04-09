@@ -1,0 +1,19 @@
+---
+// Page can be static, events load client-side
+export const prerender = true;
+
+import Layout from "../layouts/Layout.astro";
+import EventsList from "../components/EventsList";
+---
+
+<Layout>
+  <div class="pt-8 md:pt-16 pb-16 px-4 md:px-16">
+    <div class="max-w-5xl mx-auto w-full">
+      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
+        Events
+      </h1>
+      
+      <EventsList client:load />
+    </div>
+  </div>
+</Layout>
